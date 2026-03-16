@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown Editor — testscript.info</title>
+  <meta name="description" content="Editor Markdown con anteprima live, supporto sintassi completa, export HTML e dark/light mode.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Markdown Editor — testscript.info">
+  <meta property="og:description" content="Editor Markdown con anteprima live, supporto sintassi completa, export HTML.">
+  <meta property="og:url" content="https://testscript.info/demo/markdown/">
+  <meta property="og:image" content="https://testscript.info/img/cover-image_1080.jpg">
+  <link rel="canonical" href="https://testscript.info/demo/markdown/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Markdown Editor — testscript.info">
+  <meta name="twitter:description" content="Editor Markdown con anteprima live, supporto sintassi completa, export HTML.">
+  <meta name="twitter:image" content="https://testscript.info/img/cover-image_1080.jpg">
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"Markdown Editor","description":"Editor Markdown live con anteprima, export HTML e supporto sintassi completa.","url":"https://testscript.info/demo/markdown/","programmingLanguage":"Markdown","author":{"@type":"Person","name":"Antonio Trapasso"}}
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../shared/social.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0f172a;--surface:#1e293b;--border:rgba(255,255,255,.08);--text:#e2e8f0;--muted:#94a3b8;--accent:#8b5cf6;--link:#60a5fa}
+    [data-theme="light"]{--bg:#f8fafc;--surface:#fff;--border:#e2e8f0;--text:#1e293b;--muted:#64748b;--link:#3b82f6}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+    .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+    .topbar a{color:var(--muted);text-decoration:none;font-size:.85rem;display:flex;align-items:center;gap:.4rem;transition:color .2s}
+    .topbar a:hover{color:var(--accent)}
+    .brand{font-weight:700;font-size:1.1rem;color:var(--text)}.brand span{color:var(--accent)}
+    .controls{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+    .btn{padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-size:.85rem;font-weight:600;transition:all .2s;display:flex;align-items:center;gap:.4rem}
+    .btn:hover{border-color:var(--accent);color:var(--accent)}
+    .toolbar{padding:.4rem 1rem;display:flex;gap:.3rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
+    .tool{width:32px;height:32px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:all .15s}
+    .tool:hover{border-color:var(--accent);color:var(--accent);background:rgba(139,92,246,.1)}
+    .main{flex:1;display:grid;grid-template-columns:1fr;gap:0}
+    @media(min-width:768px){.main{grid-template-columns:1fr 1fr}}
+    .panel{display:flex;flex-direction:column;min-height:300px}
+    .panel-header{padding:.6rem 1rem;background:var(--surface);border-bottom:1px solid var(--border);font-size:.8rem;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:.5rem}
+    .panel-header .dot{width:8px;height:8px;border-radius:50%}
+    #editor{flex:1;background:var(--bg);color:var(--text);border:none;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.9rem;resize:none;outline:none;border-right:1px solid var(--border)}
+    #preview{flex:1;padding:1.5rem 2rem;overflow:auto;line-height:1.7;background:var(--bg)}
+    #preview h1{font-size:2rem;font-weight:800;margin:1.5rem 0 .5rem;border-bottom:2px solid var(--border);padding-bottom:.3rem}
+    #preview h2{font-size:1.5rem;font-weight:700;margin:1.2rem 0 .4rem;border-bottom:1px solid var(--border);padding-bottom:.2rem}
+    #preview h3{font-size:1.2rem;font-weight:600;margin:1rem 0 .3rem}
+    #preview p{margin:.8rem 0}
+    #preview code{background:var(--surface);padding:.15rem .4rem;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--accent)}
+    #preview pre{background:var(--surface);padding:1rem;border-radius:8px;overflow:auto;margin:.8rem 0}
+    #preview pre code{background:none;padding:0;color:var(--text)}
+    #preview blockquote{border-left:3px solid var(--accent);padding-left:1rem;margin:.8rem 0;color:var(--muted);font-style:italic}
+    #preview ul,#preview ol{margin:.8rem 0;padding-left:2rem}
+    #preview li{margin:.3rem 0}
+    #preview a{color:var(--link);text-decoration:underline}
+    #preview img{max-width:100%;border-radius:8px;margin:.5rem 0}
+    #preview table{border-collapse:collapse;width:100%;margin:.8rem 0}
+    #preview th,#preview td{border:1px solid var(--border);padding:.5rem .8rem;text-align:left}
+    #preview th{background:var(--surface);font-weight:600}
+    #preview hr{border:none;border-top:2px solid var(--border);margin:1.5rem 0}
+    #preview strong{font-weight:700}
+    #preview em{font-style:italic}
+    .stats{padding:.4rem 1rem;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);display:flex;gap:1rem}
+    .theme-toggle{background:transparent;border:1px solid var(--border);color:var(--muted);width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .theme-toggle:hover{border-color:var(--accent);color:var(--text)}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:1rem">
+      <a href="../" class="brand">ts<span>.</span> <small style="font-weight:400;color:var(--muted)">/ markdown</small></a>
+    </div>
+    <div class="controls">
+      <button class="btn" onclick="exportHTML()"><i class="bi bi-download"></i> Export HTML</button>
+      <button class="btn" onclick="copyHTML()"><i class="bi bi-clipboard"></i> Copia</button>
+      <button class="theme-toggle" onclick="toggleTheme()"><i class="bi bi-sun-fill" id="themeIcon"></i></button>
+      <a href="../"><i class="bi bi-arrow-left"></i> Demo Hub</a>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="tool" title="Grassetto" onclick="ins('**','**')"><b>B</b></button>
+    <button class="tool" title="Corsivo" onclick="ins('*','*')"><em>I</em></button>
+    <button class="tool" title="Codice" onclick="ins('`','`')"><i class="bi bi-code-slash"></i></button>
+    <button class="tool" title="Link" onclick="ins('[testo](','url)')"><i class="bi bi-link-45deg"></i></button>
+    <button class="tool" title="Immagine" onclick="ins('![alt](','url)')"><i class="bi bi-image"></i></button>
+    <button class="tool" title="H1" onclick="insLine('# ')">H1</button>
+    <button class="tool" title="H2" onclick="insLine('## ')">H2</button>
+    <button class="tool" title="H3" onclick="insLine('### ')">H3</button>
+    <button class="tool" title="Lista" onclick="insLine('- ')"><i class="bi bi-list-ul"></i></button>
+    <button class="tool" title="Lista numerata" onclick="insLine('1. ')"><i class="bi bi-list-ol"></i></button>
+    <button class="tool" title="Citazione" onclick="insLine('> ')"><i class="bi bi-chat-quote"></i></button>
+    <button class="tool" title="Linea orizzontale" onclick="insLine('---\n')"><i class="bi bi-hr"></i></button>
+    <button class="tool" title="Tabella" onclick="insTable()"><i class="bi bi-table"></i></button>
+    <button class="tool" title="Blocco codice" onclick="ins('```\n','\n```')"><i class="bi bi-file-code"></i></button>
+  </div>
+
+  <div class="main">
+    <div class="panel">
+      <div class="panel-header"><div class="dot" style="background:#8b5cf6"></div> editor.md</div>
+      <textarea id="editor" spellcheck="false"># Markdown Editor ✨
+
+Benvenuto nell'editor **Markdown** con anteprima live!
+
+## Funzionalità
+
+- **Grassetto** e *corsivo*
+- ~~Testo barrato~~
+- `Codice inline` e blocchi di codice
+- [Link](https://testscript.info) cliccabili
+- Liste ordinate e non ordinate
+
+## Esempio codice
+
+```javascript
+function saluta(nome) {
+  return `Ciao, ${nome}! 👋`;
+}
+console.log(saluta("Developer"));
+```
+
+## Tabella
+
+| Tecnologia | Tipo | Rating |
+|-----------|------|--------|
+| React | Frontend | ⭐⭐⭐⭐⭐ |
+| Python | Backend | ⭐⭐⭐⭐⭐ |
+| SQL | Database | ⭐⭐⭐⭐ |
+
+> "La semplicità è la raffinatezza suprema." — Leonardo da Vinci
+
+---
+
+### Todo List
+
+- [x] Creare l'editor
+- [x] Aggiungere anteprima live
+- [x] Supporto dark mode
+- [ ] Aggiungere temi personalizzati
+
+![Placeholder](https://via.placeholder.com/600x200/1e293b/e2e8f0?text=Markdown+Editor)
+</textarea>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><div class="dot" style="background:#22c55e"></div> preview</div>
+      <div id="preview"></div>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="social-share" id="socialShare">
+    <a href="#" class="share-fb" title="Facebook" onclick="shareOn('facebook')"><i class="bi bi-facebook"></i></a>
+    <a href="#" class="share-x" title="X" onclick="shareOn('x')"><i class="bi bi-twitter-x"></i></a>
+    <a href="#" class="share-li" title="LinkedIn" onclick="shareOn('linkedin')"><i class="bi bi-linkedin"></i></a>
+    <a href="#" class="share-wa" title="WhatsApp" onclick="shareOn('whatsapp')"><i class="bi bi-whatsapp"></i></a>
+    <a href="#" class="share-tg" title="Telegram" onclick="shareOn('telegram')"><i class="bi bi-telegram"></i></a>
+  </div>
+
+  <script src="../shared/social.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    const editor = document.getElementById('editor');
+    const preview = document.getElementById('preview');
+    const stats = document.getElementById('stats');
+
+    marked.setOptions({ breaks: true, gfm: true });
+
+    function render() {
+      preview.innerHTML = marked.parse(editor.value);
+      const text = editor.value;
+      const words = text.trim().split(/\s+/).filter(w => w).length;
+      const chars = text.length;
+      const lines = text.split('\n').length;
+      stats.textContent = `${words} parole • ${chars} caratteri • ${lines} righe`;
+    }
+
+    editor.addEventListener('input', render);
+    render();
+
+    function ins(before, after) {
+      const s = editor.selectionStart, e = editor.selectionEnd;
+      const sel = editor.value.substring(s, e) || 'testo';
+      editor.value = editor.value.substring(0,s) + before + sel + after + editor.value.substring(e);
+      editor.selectionStart = s + before.length;
+      editor.selectionEnd = s + before.length + sel.length;
+      editor.focus(); render();
+    }
+
+    function insLine(prefix) {
+      const s = editor.selectionStart;
+      const lineStart = editor.value.lastIndexOf('\n', s-1) + 1;
+      editor.value = editor.value.substring(0, lineStart) + prefix + editor.value.substring(lineStart);
+      editor.selectionStart = editor.selectionEnd = s + prefix.length;
+      editor.focus(); render();
+    }
+
+    function insTable() {
+      ins('| Col 1 | Col 2 | Col 3 |\n|-------|-------|-------|\n| ', ' | | |\n');
+    }
+
+    function exportHTML() {
+      const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Markdown Export</title><style>body{font-family:system-ui;max-width:800px;margin:2rem auto;padding:0 1rem;line-height:1.6}code{background:#f1f5f9;padding:.15rem .4rem;border-radius:4px}pre{background:#1e293b;color:#e2e8f0;padding:1rem;border-radius:8px;overflow:auto}table{border-collapse:collapse;width:100%}th,td{border:1px solid #e2e8f0;padding:.5rem}th{background:#f1f5f9}</style></head><body>${marked.parse(editor.value)}</body></html>`;
+      const blob = new Blob([html], {type:'text/html'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'document.html';
+      a.click();
+    }
+
+    function copyHTML() {
+      navigator.clipboard.writeText(marked.parse(editor.value)).then(() => {
+        const btn = document.querySelector('[onclick="copyHTML()"]');
+        btn.innerHTML = '<i class="bi bi-check2"></i> Copiato!';
+        setTimeout(() => btn.innerHTML = '<i class="bi bi-clipboard"></i> Copia', 2000);
+      });
+    }
+
+    editor.addEventListener('keydown', e => {
+      if (e.key === 'Tab') { e.preventDefault(); const s=e.target.selectionStart; e.target.value=e.target.value.substring(0,s)+'  '+e.target.value.substring(e.target.selectionEnd); e.target.selectionStart=e.target.selectionEnd=s+2; render(); }
+    });
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      document.getElementById('themeIcon').className = next === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill';
+      localStorage.setItem('demo_theme', next);
+    }
+    (() => { const s = localStorage.getItem('demo_theme'); if (s) { document.documentElement.setAttribute('data-theme', s); document.getElementById('themeIcon').className = s === 'dark' ? 'bi bi-sun-fill' : 'bi bi-moon-stars-fill'; }})();
+  </script>
+</body>
+</html>
